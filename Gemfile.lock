@@ -8,23 +8,23 @@ GIT
 
 GIT
   remote: https://github.com/errbit/errbit_plugin.git
-  revision: 1bac2fb6800b0ad24233093fc6891d34bb20e2eb
+  revision: 2cafc83177e2422fdd639e0cee490ef2949a6bde
   specs:
     errbit_plugin (0.0.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    actionmailer (3.2.17)
-      actionpack (= 3.2.17)
+    actionmailer (3.2.18)
+      actionpack (= 3.2.18)
       mail (~> 2.5.4)
     actionmailer_inline_css (1.5.3)
       actionmailer (>= 3.0.0)
       nokogiri (>= 1.4.4)
       premailer (>= 1.7.1)
-    actionpack (3.2.17)
-      activemodel (= 3.2.17)
-      activesupport (= 3.2.17)
+    actionpack (3.2.18)
+      activemodel (= 3.2.18)
+      activesupport (= 3.2.18)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
@@ -32,18 +32,18 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    activemodel (3.2.17)
-      activesupport (= 3.2.17)
+    activemodel (3.2.18)
+      activesupport (= 3.2.18)
       builder (~> 3.0.0)
-    activerecord (3.2.17)
-      activemodel (= 3.2.17)
-      activesupport (= 3.2.17)
+    activerecord (3.2.18)
+      activemodel (= 3.2.18)
+      activesupport (= 3.2.18)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activeresource (3.2.17)
-      activemodel (= 3.2.17)
-      activesupport (= 3.2.17)
-    activesupport (3.2.17)
+    activeresource (3.2.18)
+      activemodel (= 3.2.18)
+      activesupport (= 3.2.18)
+    activesupport (3.2.18)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
     addressable (2.3.5)
@@ -73,9 +73,8 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-    cliver (0.2.2)
+    cliver (0.3.2)
     coderay (1.0.9)
-    columnize (0.3.6)
     coveralls (0.7.0)
       multi_json (~> 1.3)
       rest-client
@@ -88,13 +87,8 @@ GEM
       addressable
     database_cleaner (1.2.0)
     debug_inspector (0.0.2)
-    debugger (1.6.3)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.4)
-    debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.4)
     decent_exposure (2.3.0)
+    descendants_tracker (0.0.3)
     devise (3.1.1)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -112,12 +106,11 @@ GEM
       launchy (~> 2.1)
       mail (~> 2.2)
     errbit_trac_plugin (0.0.1)
-      errbit_plugin
       trac4r (~> 1.2.4)
     erubis (2.7.0)
     execjs (2.0.2)
-    fabrication (2.9.0)
-    faraday (0.8.8)
+    fabrication (2.8.1)
+    faraday (0.8.9)
       multipart-post (~> 1.2.0)
     flowdock (0.3.1)
       httparty (~> 0.7)
@@ -127,21 +120,22 @@ GEM
       thor (>= 0.13.6)
     gash (0.1.4)
       open4 (>= 0.9.6)
-    git (1.2.6)
-    github_api (0.10.1)
-      addressable
-      faraday (~> 0.8.1)
+    git (1.2.7)
+    github_api (0.11.3)
+      addressable (~> 2.3)
+      descendants_tracker (~> 0.0.1)
+      faraday (~> 0.8, < 0.10)
       hashie (>= 1.2)
-      multi_json (~> 1.4)
-      nokogiri (~> 1.5.2)
+      multi_json (>= 1.7.5, < 2.0)
+      nokogiri (~> 1.6.0)
       oauth2
-    gli (2.9.0)
+    gli (2.11.0)
     grancher (0.1.5)
       gash
     haml (4.0.3)
       tilt
     hashie (2.0.5)
-    highline (1.6.20)
+    highline (1.6.19)
     hike (1.2.3)
     hipchat (0.12.0)
       httparty
@@ -189,6 +183,7 @@ GEM
       railties
     method_source (0.8.2)
     mime-types (1.25.1)
+    mini_portile (0.5.3)
     mongoid (3.1.5)
       activemodel (~> 3.2)
       moped (~> 1.4)
@@ -204,7 +199,7 @@ GEM
       rails (>= 3.2.0)
       railties (>= 3.2.0)
     moped (1.5.1)
-    multi_json (1.9.3)
+    multi_json (1.10.0)
     multi_xml (0.5.5)
     multipart-post (1.2.0)
     net-scp (1.1.2)
@@ -214,15 +209,16 @@ GEM
     net-ssh (2.7.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.5.10)
+    nokogiri (1.6.1)
+      mini_portile (~> 0.5.0)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
       jwt (~> 0.1.4)
       multi_json (~> 1.0)
       rack (~> 1.2)
-    octokit (2.6.0)
-      sawyer (~> 0.5.1)
+    octokit (3.1.0)
+      sawyer (~> 0.5.3)
     omniauth (1.1.4)
       hashie (>= 1.2, < 3)
       rack
@@ -232,18 +228,18 @@ GEM
     omniauth-oauth2 (1.1.1)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
-    open4 (1.3.0)
+    open4 (1.3.4)
     origin (1.1.0)
     orm_adapter (0.4.0)
     pjax_rails (0.3.4)
       jquery-rails
-    poltergeist (1.4.1)
-      capybara (~> 2.1.0)
-      cliver (~> 0.2.1)
+    poltergeist (1.5.1)
+      capybara (~> 2.1)
+      cliver (~> 0.3.1)
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
     polyglot (0.3.4)
-    premailer (1.7.9)
+    premailer (1.7.3)
       css_parser (>= 1.1.9)
       htmlentities (>= 4.0.0)
     pry (0.9.12.2)
@@ -266,19 +262,19 @@ GEM
     rack-ssl-enforcer (0.2.6)
     rack-test (0.6.2)
       rack (>= 1.0)
-    rails (3.2.17)
-      actionmailer (= 3.2.17)
-      actionpack (= 3.2.17)
-      activerecord (= 3.2.17)
-      activeresource (= 3.2.17)
-      activesupport (= 3.2.17)
+    rails (3.2.18)
+      actionmailer (= 3.2.18)
+      actionpack (= 3.2.18)
+      activerecord (= 3.2.18)
+      activeresource (= 3.2.18)
+      activesupport (= 3.2.18)
       bundler (~> 1.0)
-      railties (= 3.2.17)
-    rails_autolink (1.1.5)
+      railties (= 3.2.18)
+    rails_autolink (1.1.4)
       rails (> 3.1)
-    railties (3.2.17)
-      actionpack (= 3.2.17)
-      activesupport (= 3.2.17)
+    railties (3.2.18)
+      actionpack (= 3.2.18)
+      activesupport (= 3.2.18)
       rack-ssl (~> 1.3.2)
       rake (>= 0.8.7)
       rdoc (~> 3.4)
@@ -289,7 +285,7 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     ref (1.0.5)
-    request_store (1.0.5)
+    request_store (1.0.6)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     ri_cal (0.8.8)
@@ -312,7 +308,7 @@ GEM
       json
       rest-client
     safe_yaml (0.9.7)
-    sawyer (0.5.1)
+    sawyer (0.5.4)
       addressable (~> 2.3.5)
       faraday (~> 0.8, < 0.10)
     sdoc (0.3.20)
@@ -358,21 +354,21 @@ GEM
       railties (> 3.2.8, < 4.0.0)
       sprockets (>= 2.0.0)
     tzinfo (0.3.39)
-    uglifier (2.3.0)
+    uglifier (2.2.1)
       execjs (>= 0.3.0)
-      json (>= 1.8.0)
+      multi_json (~> 1.0, >= 1.0.2)
     underscore-rails (1.5.2)
     unicorn (4.6.3)
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    useragent (0.9.0)
+    useragent (0.8.3)
     warden (1.2.3)
       rack (>= 1.0)
     webmock (1.15.0)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
-    websocket-driver (0.3.0)
+    websocket-driver (0.3.3)
     xmpp4r (0.5.5)
     xpath (2.0.0)
       nokogiri (~> 1.3)
@@ -382,9 +378,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  actionmailer (~> 3.2.17)
+  actionmailer (~> 3.2.18)
   actionmailer_inline_css
-  actionpack (~> 3.2.17)
+  actionpack (~> 3.2.18)
   airbrake
   better_errors
   binding_of_caller
@@ -393,7 +389,6 @@ DEPENDENCIES
   capybara
   coveralls
   database_cleaner
-  debugger
   decent_exposure
   devise
   draper
@@ -427,7 +422,7 @@ DEPENDENCIES
   rack-ssl
   rack-ssl-enforcer
   rails_autolink
-  railties (~> 3.2.17)
+  railties (~> 3.2.18)
   ri_cal
   rspec-rails
   rushover
