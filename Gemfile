@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-RAILS_VERSION = '~> 3.2.15'
+RAILS_VERSION = '~> 3.2.18'
 
 gem 'actionmailer', RAILS_VERSION
 gem 'actionpack', RAILS_VERSION
@@ -63,7 +63,6 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'webmock', :require => false
   gem 'airbrake', :require => false
-  gem 'debugger', :platform => :mri_19
   gem 'pry-rails'
 #  gem 'rpm_contrib'
 #  gem 'newrelic_rpm'
