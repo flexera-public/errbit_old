@@ -53,7 +53,7 @@ class ErrorReport
       :user_attributes => user_attributes,
       :framework => framework
     )
-    error.notices << @notice
+    error.with(safe: {w: 0}).notices << @notice
     @notice
   end
   attr_reader :notice
