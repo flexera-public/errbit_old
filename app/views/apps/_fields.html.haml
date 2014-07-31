@@ -34,7 +34,7 @@
   - if Errbit::Config.per_app_email_at_notices
     %div.email_at_notices_nested{:style => f.object.notify_on_errs ? '' : 'display: none;'}
       .field-helpertext Send a notification every
-      = f.text_field :email_at_notices, :value => f.object.email_at_notices.join(", ")
+      = f.text_field :email_at_notices, :value => f.object.email_at_notices.respond_to?(:join) ? f.object.email_at_notices.join(", ") : f.object.email_at_notices
       .field-helpertext times an error occurs (comma separated).
   %div.checkbox
     = f.check_box :notify_on_deploys
