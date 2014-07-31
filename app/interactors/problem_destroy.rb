@@ -37,12 +37,12 @@ class ProblemDestroy
   end
 
   def delete_errs
-    Notice.delete_all(:err_id => { '$in' => errs_id })
-    Err.delete_all(:_id => { '$in' => errs_id })
+    Notice.with(safe: {w: 0}).delete_all(:err_id => { '$in' => errs_id })
+    Err.with(safe: {w: 0}).delete_all(:_id => { '$in' => errs_id })
   end
 
   def delete_comments
-    Comment.delete_all(:_id => { '$in' => comments_id })
+    Comment.with(safe: {w: 0}).delete_all(:_id => { '$in' => comments_id })
   end
 
 end
