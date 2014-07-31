@@ -38,19 +38,27 @@ namespace :errbit do
         Digest::SHA1.hexdigest(source.to_s)
       end
 
-      puts "Regenerating Err fingerprints"
+      STDOUT.sync = true
+      print "Regenerating Err fingerprints for #{Notice.count} notices"
+      count = 0
       Err.create_indexes
+      Notice.all.each do |notice|
+        count += 1
+        print '.' if (count % 1000) == 0
+
+        next unless notice.err.present? && notice.err.problem.present?
+
+        # TODO send api key to fingerprinter
+        fingerprint = ErrorReport.fingerprint_strategy.generate(notice, '')
+        notice.err = notice.app.find_or_create_err!(error_class: notice.error_class,
+                                                    environment: notice.problem.environment,
+                                                    fingerprint: fingerprint)
+        notice.save
+      end
+
+      puts "Cleaning up defunct Errs"
       Err.all.each do |err|
-        next if err.notices.count == 0
-        source = {
-          :backtrace => normalize_backtrace(err.notices.first.backtrace).to_s,
-          :error_class => err.error_class,
-          :component => err.component,
-          :action => err.action,
-          :environment => err.environment,
-          :api_key => err.app.api_key
-        }
-        err.update_attributes(:fingerprint => fingerprint(source))
+        err.delete if err.notices.count == 0
       end
     end
 
