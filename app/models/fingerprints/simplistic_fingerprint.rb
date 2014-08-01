@@ -7,16 +7,12 @@ class SimplisticFingerprint < Fingerprint
   def fingerprint_source
     {
       :location        => location,
-      :error_class     => notice.error_class,
+      :error_class     => notice.error_class.to_s,
     }
   end
 
   private
-  def sanitized_method_signature
-    location['method'].gsub(/[0-9]+|FRAGMENT/, '#').gsub(/_+#/, '_#')
-  end
-
   def location
-    notice.backtrace.lines.first
+    notice.backtrace.lines.first.to_s
   end
 end
