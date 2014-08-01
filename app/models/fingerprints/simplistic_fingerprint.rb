@@ -7,12 +7,12 @@ class SimplisticFingerprint < Fingerprint
   def fingerprint_source
     {
       :location        => location,
-      :error_class     => notice.error_class,
+      :error_class     => notice.error_class.to_s,
     }
   end
 
   private
   def location
-    notice.backtrace.lines.first
+    notice.backtrace.lines.first.to_s
   end
 end
