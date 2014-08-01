@@ -38,11 +38,13 @@ namespace :errbit do
         Digest::SHA1.hexdigest(source.to_s)
       end
 
+      STDOUT.sync = true
       total = Notice.count
       done  = 0
+
       puts "Regenerating Err fingerprints for %d notices..." % [total]
       Err.create_indexes
-      Notice.all.each do |notice|
+      Notice.all.no_timeout.each do |notice|
         done += 1
         puts "%.0f%%" % [100.0 * done / total] if (done % 1000 == 0)
 
@@ -57,13 +59,13 @@ namespace :errbit do
       puts
 
       puts "Cleaning up defunct Errs"
-      Err.all.each do |err|
+      Err.all.no_timeout.each do |err|
         err.with(safe: {w: 0}).delete if err.notices.count == 0
       end
       puts
 
       puts "Cleaning up defunct Problems"
-      Problem.all.each do |prob|
+      Problem.all.no_timeout.each do |prob|
         prob.with(safe: {w: 0}).delete if prob.errs.count == 0
       end
       puts
