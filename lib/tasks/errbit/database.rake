@@ -38,13 +38,13 @@ namespace :errbit do
         Digest::SHA1.hexdigest(source.to_s)
       end
 
-      total = Notice.count.to_f
+      total = Notice.count
       done  = 0
       puts "Regenerating Err fingerprints for %d notices..." % [total]
       Err.create_indexes
       Notice.all.each do |notice|
         done += 1
-        puts "%.0f%%" % [done / total] if (done % 1000 == 0)
+        puts "%.0f%%" % [100.0 * done / total] if (done % 1000 == 0)
 
         next unless notice.err.present? && notice.err.problem.present?
 
