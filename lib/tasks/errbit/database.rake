@@ -43,7 +43,7 @@ namespace :errbit do
           puts "%.0f%%" % [pct]
         end
 
-        if err.notices.count > 1
+        if err.notices.count > n
           (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
         end
       end
