@@ -25,28 +25,46 @@ namespace :errbit do
       puts "=== Cleared #{ResolvedProblemClearer.new.execute} resolved errors from the database."
     end
 
-    desc "Regenerate fingerprints"
-    task :regenerate_fingerprints => :environment do
+    desc "Discard duplicate notices, keeping only N examples of each err"
+    task :cull_notices, [:n] => :environment do |_, args|
+      n = args[:n] || 1
 
-      def normalize_backtrace(backtrace)
-        backtrace[0...3].map do |trace|
-          trace.merge 'method' => trace['method'].to_s.gsub(/[0-9_]{10,}+/, "__FRAGMENT__")
+      STDOUT.sync = true
+      total = Err.count
+      done  = 0
+      last_report = 0.0
+
+      puts "Culling redundant notices for %d errs..." % [total]
+      Err.all.no_timeout.each do |err|
+        done += 1
+        pct = 100.0 * done / total
+        if pct - last_report > 1
+          last_report = pct
+          puts "%.0f%%" % [pct]
+        end
+
+        if err.notices.count > 1
+          (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
         end
       end
+    end
 
-      def fingerprint(source)
-        Digest::SHA1.hexdigest(source.to_s)
-      end
-
+    desc "Regenerate fingerprints"
+    task :regenerate_fingerprints => :environment do
       STDOUT.sync = true
       total = Notice.count
       done  = 0
+      last_report = 0.0
 
-      puts "Regenerating Err fingerprints for %d notices..." % [total]
+      puts "Regenerating err fingerprints for %d notices..." % [total]
       Err.create_indexes
       Notice.all.no_timeout.each do |notice|
         done += 1
-        puts "%.0f%%" % [100.0 * done / total] if (done % 1000 == 0)
+        pct = 100.0 * done / total
+        if pct - last_report > 1
+          last_report = pct
+          puts "%.0f%%" % [pct]
+        end
 
         next unless notice.err.present? && notice.err.problem.present?
 
