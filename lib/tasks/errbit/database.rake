@@ -3,6 +3,26 @@ require 'digest/sha1'
 namespace :errbit do
   namespace :db do
 
+    def cleanup_defunct_errs_and_problems
+      puts "Cleaning up defunct Errs"
+      Err.create_indexes
+      Err.all.no_timeout.each do |err|
+        err.with(safe: {w: 0}).delete if err.notices.count <= 0
+      end
+      puts
+
+      puts "Cleaning up defunct Problems"
+      Problem.create_indexes
+      Problem.all.no_timeout.each do |prob|
+        prob.with(safe: {w: 0}).delete if prob.errs.count <= 0
+      end
+      puts
+
+      Rake::Task["errbit:db:update_problem_attrs"].execute
+      Rake::Task["errbit:db:update_notices_count"].execute
+      puts
+    end
+
     desc "Updates cached attributes on Problem"
     task :update_problem_attrs => :environment do
       puts "Updating problems"
@@ -44,9 +64,15 @@ namespace :errbit do
         end
 
         if err.notices.count > n
+          to_delete = err.notices.count - n
+          puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
           (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
         end
       end
+
+      cleanup_defunct_errs_and_problems
+
+      puts "All done!"
     end
 
     desc "Regenerate fingerprints"
@@ -76,17 +102,7 @@ namespace :errbit do
       end
       puts
 
-      puts "Cleaning up defunct Errs"
-      Err.all.no_timeout.each do |err|
-        err.with(safe: {w: 0}).delete if err.notices.count == 0
-      end
-      puts
-
-      puts "Cleaning up defunct Problems"
-      Problem.all.no_timeout.each do |prob|
-        prob.with(safe: {w: 0}).delete if prob.errs.count == 0
-      end
-      puts
+      cleanup_defunct_errs_and_problems
 
       puts "All done!"
     end
