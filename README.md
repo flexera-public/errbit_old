@@ -416,7 +416,7 @@ Errbit now allows you to easily use your own Fingerprint Strategy if that's what
 with compatibility. The fingerprint strategy can be changed by adding an initializer to errbit:
 
 ```ruby
-# config/fingerprint.rb
+# config/initializers/fingerprint.rb
 ErrorReport.fingerprint_strategy = LegacyFingerprint
 ```
 
