@@ -35,7 +35,7 @@ namespace :errbit do
     task :update_notices_count => :environment do
       puts "Updating problem.notices_count"
       Problem.no_timeout.all.each do |pr|
-        pr.update_attributes(:notices_count => pr.notices.count)
+        pr.with(safe: {w: 0}).update_attributes(:notices_count => pr.notices.count)
       end
     end
 
@@ -86,7 +86,7 @@ namespace :errbit do
         puts "Notices to remove: #{item_count}"
         while item_count > 0
           Problem.find(args[:problem_id]).notices.limit(BATCH_SIZE).each do |notice|
-            notice.remove
+            notice.with(safe: {w: 0}).remove
             removed_count += 1
           end
           item_count -= BATCH_SIZE
@@ -117,7 +117,7 @@ namespace :errbit do
       if err.notices.count > n
         to_delete = err.notices.count - n
         puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
-        (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
+        (err.notices.to_a[n..-1] || []).each { |notice| notice.with(safe: {w: 0}).destroy }
       end
     end
 
