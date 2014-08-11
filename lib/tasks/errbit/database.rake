@@ -7,14 +7,22 @@ namespace :errbit do
       puts "Cleaning up defunct Errs"
       Err.create_indexes
       Err.all.no_timeout.each do |err|
+<<<<<<< HEAD
         err.delete if err.notices.count <= 0
+=======
+        err.with(safe: {w: 0}).delete if err.notices.count <= 0
+>>>>>>> regenerate_fingerprints
       end
       puts
 
       puts "Cleaning up defunct Problems"
       Problem.create_indexes
       Problem.all.no_timeout.each do |prob|
+<<<<<<< HEAD
         prob.delete if prob.errs.count <= 0
+=======
+        prob.with(safe: {w: 0}).delete if prob.errs.count <= 0
+>>>>>>> regenerate_fingerprints
       end
       puts
 
@@ -45,8 +53,40 @@ namespace :errbit do
       puts "=== Cleared #{ResolvedProblemClearer.new.execute} resolved errors from the database."
     end
 
+    desc "Discard duplicate notices, keeping only N examples of each err"
+    task :cull_notices, [:n] => :environment do |_, args|
+      n = Integer(args[:n] || 1)
+
+      STDOUT.sync = true
+      total = Err.count
+      done  = 0
+      last_report = 0.0
+
+      puts "Culling redundant notices for %d errs..." % [total]
+      Err.all.no_timeout.each do |err|
+        done += 1
+        pct = 100.0 * done / total
+        if pct - last_report > 1
+          last_report = pct
+          puts "%.0f%%" % [pct]
+        end
+
+        if err.notices.count > n
+          to_delete = err.notices.count - n
+          puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
+          (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
+        end
+      end
+      puts
+
+      cleanup_defunct_errs_and_problems
+
+      puts "All done!"
+    end
+
     desc "Regenerate fingerprints"
     task :regenerate_fingerprints => :environment do
+      STDOUT.sync = true
       total = Notice.count
       done  = 0
       last_report = 0.0
@@ -70,36 +110,6 @@ namespace :errbit do
         notice.save
       end
       puts
-
-      cleanup_defunct_errs_and_problems
-
-      puts "All done!"
-    end
-
-    desc "Discard duplicate notices, keeping only N examples of each err"
-    task :notices_cull, [ :n ] => :environment do |_, args|
-      n = args[:n].to_i
-      raise ArgumentError, "Please specify how many notices to keep" unless n > 0
-
-      total = Err.count
-      done  = 0
-      last_report = 0.0
-
-      puts "Culling redundant notices for %d errs..." % [total]
-      Err.all.no_timeout.each do |err|
-        done += 1
-        pct = 100.0 * done / total
-        if pct - last_report > 1
-          last_report = pct
-          puts "%.0f%%" % [pct]
-        end
-
-        if err.notices.count > n
-          to_delete = err.notices.count - n
-          puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
-          (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
-        end
-      end
 
       cleanup_defunct_errs_and_problems
 
