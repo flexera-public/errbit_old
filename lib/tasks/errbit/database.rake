@@ -47,7 +47,7 @@ namespace :errbit do
 
     desc "Discard duplicate notices, keeping only N examples of each err"
     task :cull_notices, [:n] => :environment do |_, args|
-      n = args[:n] || 1
+      n = Integer(args[:n] || 1)
 
       STDOUT.sync = true
       total = Err.count
