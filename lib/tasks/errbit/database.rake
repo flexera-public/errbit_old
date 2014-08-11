@@ -35,7 +35,7 @@ namespace :errbit do
     task :update_notices_count => :environment do
       puts "Updating problem.notices_count"
       Problem.no_timeout.all.each do |pr|
-        pr.update_attributes(:notices_count => pr.notices.count)
+        pr.with(safe: {w: 0}).update_attributes(:notices_count => pr.notices.count)
       end
     end
 
@@ -68,7 +68,7 @@ namespace :errbit do
         notice.err = notice.app.find_or_create_err!(error_class: notice.error_class,
                                                     environment: notice.problem.environment,
                                                     fingerprint: fingerprint)
-        notice.save
+        notice.with(safe: {w: 0}).save
       end
       puts
 
@@ -86,7 +86,7 @@ namespace :errbit do
         puts "Notices to remove: #{item_count}"
         while item_count > 0
           Problem.find(args[:problem_id]).notices.limit(BATCH_SIZE).each do |notice|
-            notice.remove
+            notice.with(safe: {w: 0}).remove
             removed_count += 1
           end
           item_count -= BATCH_SIZE
@@ -94,35 +94,35 @@ namespace :errbit do
         end
       end
     end
-  end
 
-  desc "Discard duplicate notices, keeping only N examples of each err"
-  task :notices_cull, [:n] => :environment do |_, args|
-    n = Integer(args[:n] || 1)
+    desc "Discard duplicate notices, keeping only N examples of each err"
+    task :notices_cull, [:n] => :environment do |_, args|
+      n = Integer(args[:n] || 1)
 
-    STDOUT.sync = true
-    total = Err.count
-    done  = 0
-    last_report = 0.0
+      STDOUT.sync = true
+      total = Err.count
+      done  = 0
+      last_report = 0.0
 
-    puts "Culling redundant notices for %d errs..." % [total]
-    Err.all.no_timeout.each do |err|
-      done += 1
-      pct = 100.0 * done / total
-      if pct - last_report > 1
-        last_report = pct
-        puts "%.0f%%" % [pct]
+      puts "Culling redundant notices for %d errs..." % [total]
+      Err.all.no_timeout.each do |err|
+        done += 1
+        pct = 100.0 * done / total
+        if pct - last_report > 1
+          last_report = pct
+          puts "%.0f%%" % [pct]
+        end
+
+        if err.notices.count > n
+          to_delete = err.notices.count - n
+          puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
+          (err.notices.to_a[n..-1] || []).each { |notice| notice.with(safe: {w: 0}).destroy }
+        end
       end
 
-      if err.notices.count > n
-        to_delete = err.notices.count - n
-        puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
-        (err.notices.to_a[n..-1] || []).each { |notice| notice.destroy }
-      end
+      cleanup_defunct_errs_and_problems
+
+      puts "All done!"
     end
-
-    cleanup_defunct_errs_and_problems
-
-    puts "All done!"
   end
 end
