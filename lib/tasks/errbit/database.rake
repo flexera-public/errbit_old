@@ -2,6 +2,7 @@ require 'digest/sha1'
 
 namespace :errbit do
   namespace :db do
+    BATCH_SIZE = 1000
 
     def cleanup_defunct_errs_and_problems
       puts "Cleaning up defunct Errs"
@@ -79,7 +80,6 @@ namespace :errbit do
 
     desc "Remove notices in batch"
     task :notices_delete, [ :problem_id ] => [ :environment ] do
-      BATCH_SIZE = 1000
       if args[:problem_id]
         item_count = Problem.find(args[:problem_id]).notices.count
         removed_count = 0
@@ -116,7 +116,12 @@ namespace :errbit do
         if err.notices.count > n
           to_delete = err.notices.count - n
           puts "  cleaning up Err/#{err.id} (#{to_delete} notices)" if to_delete > 1000
-          (err.notices.to_a[n..-1] || []).each { |notice| notice.with(safe: {w: 0}).destroy }
+          while to_delete > 0
+            err.notices.limit(BATCH_SIZE).each do |notice|
+              notice.with(safe: {w: 0}).destroy
+              to_delete -= 1
+            end
+          end
         end
       end
 
