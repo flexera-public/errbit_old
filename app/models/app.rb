@@ -103,8 +103,8 @@ class App
     "#{Errbit::Config.github_url}/#{github_repo}" if github_repo?
   end
 
-  def github_url_to_file(file)
-    "#{github_url}/blob/#{repo_branch}/#{file}"
+  def github_url_to_file(file, revision=repo_branch)
+    "#{github_url}/blob/#{revision}/#{file}"
   end
 
   def bitbucket_repo?

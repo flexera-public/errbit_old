@@ -7,6 +7,7 @@ class BacktraceLine
   field :column, :type => Integer
   field :file
   field :method
+  field :revision
 
   embedded_in :backtrace
 

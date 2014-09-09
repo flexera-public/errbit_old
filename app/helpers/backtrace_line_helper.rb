@@ -7,12 +7,9 @@ module BacktraceLineHelper
   private
   def link_to_in_app_source_file(line, text)
     return unless line.in_app?
-    if line.file_name =~ /\.js$/
-      link_to_hosted_javascript(line, text)
-    else
+    link_to_hosted_javascript(line, text) ||
       link_to_repo_source_file(line, text) ||
       link_to_issue_tracker_file(line, text)
-    end
   end
 
   def link_to_repo_source_file(line, text)
@@ -31,7 +28,8 @@ module BacktraceLineHelper
 
   def link_to_github(line, text = nil)
     return unless line.app.github_repo?
-    href = "%s#L%s" % [line.app.github_url_to_file(line.decorated_path + line.file_name), line.number]
+    args = [line.decorated_path + line.file_name, line.revision].compact
+    href = "%s#L%s" % [line.app.github_url_to_file(*args), line.number]
     link_to(text || line.file_name, href, :target => '_blank')
   end
 

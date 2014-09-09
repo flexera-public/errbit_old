@@ -14,6 +14,7 @@ gem 'haml'
 gem 'htmlentities'
 gem 'rack-ssl', :require => 'rack/ssl'   # force SSL
 
+gem 'sourcemap'
 gem 'useragent'
 gem 'decent_exposure'
 gem 'strong_parameters'
