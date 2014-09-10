@@ -47,6 +47,7 @@ class Problem
   scope :unresolved, where(:resolved => false)
   scope :ordered, order_by(:last_notice_at.desc)
   scope :for_apps, lambda {|apps| where(:app_id.in => apps.all.map(&:id))}
+  #scope :for_notices_with_user_id, lambda {|notices| where(:user_attributes => { 'id' => &:id })}
 
   validates_presence_of :last_notice_at, :first_notice_at
 
@@ -152,13 +153,38 @@ class Problem
   end
 
   def self.search(value)
-    any_of(
-      {:error_class => /#{value}/i},
-      {:where => /#{value}/i},
-      {:message => /#{value}/i},
-      {:app_name => /#{value}/i},
-      {:environment => /#{value}/i}
-    )
+    if value.include? '='
+      #Search by keys
+      # Create hash with the search
+      search_hash = Hash[value.split.map{|item| item.split('=')}]
+      problems_id = nil
+      search_hash.each do |key, value|
+        case key
+        when 'user', 'userid'
+          notices = Notice.where('user_attributes.id' => value )
+          problems_id_tmp = notices.inject([]){|total, notice| total << notice.problem.id}
+        when 'server', 'appserver'
+          notices = Notice.where('server_environment.hostname' => value)
+          problems_id_tmp = notices.inject([]){|total, notice| total << notice.problem.id}
+        end
+        # From the second condition and on, we intersect the results (AND)
+        if problems_id.nil?
+          problems_id = problems_id_tmp
+        else
+          problems_id &= problems_id_tmp
+        end
+      end
+      where(:id => { '$in' => problems_id})
+    else
+      # Old boring string search
+      res = any_of(
+        {:error_class => /#{value}/i},
+        {:where => /#{value}/i},
+        {:message => /#{value}/i},
+        {:app_name => /#{value}/i},
+        {:environment => /#{value}/i}
+      )
+    end
   end
 
   private
