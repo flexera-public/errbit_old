@@ -153,12 +153,11 @@ class Problem
   end
 
   def self.search(value)
-    if value.include? '='
-      #Search by keys
-      # Create hash with the search
-      search_hash = Hash[value.split.map{|item| item.split('=')}]
-      problems_id = nil
-      search_hash.each do |key, value|
+    problems_id = nil
+    value.split.each do |search_item|
+      if search_item.include? '='
+        # key-based search
+        key, value = search_item.split('=')
         case key
         when 'user', 'userid'
           notices = Notice.where('user_attributes.id' => value )
@@ -167,24 +166,25 @@ class Problem
           notices = Notice.where('server_environment.hostname' => value)
           problems_id_tmp = notices.inject([]){|total, notice| total << notice.problem.id}
         end
-        # From the second condition and on, we intersect the results (AND)
-        if problems_id.nil?
-          problems_id = problems_id_tmp
-        else
-          problems_id &= problems_id_tmp
-        end
+      else
+        # String search
+        problems = Problem.any_of(
+          {:error_class => /#{search_item}/i},
+          {:where => /#{search_item}/i},
+          {:message => /#{search_item}/i},
+          {:app_name => /#{search_item}/i},
+          {:environment => /#{search_item}/i}
+        )
+        problems_id_tmp = problems.inject([]){|total, problem| total << problem.id}
       end
-      where(:id => { '$in' => problems_id})
-    else
-      # Old boring string search
-      res = any_of(
-        {:error_class => /#{value}/i},
-        {:where => /#{value}/i},
-        {:message => /#{value}/i},
-        {:app_name => /#{value}/i},
-        {:environment => /#{value}/i}
-      )
+      # From the second condition and on, we intersect the results (AND)
+      if problems_id.nil?
+        problems_id = problems_id_tmp.uniq
+      else
+        problems_id &= problems_id_tmp.uniq
+      end
     end
+    where(:id => { '$in' => problems_id})
   end
 
   private
