@@ -8,6 +8,8 @@ class SimplisticFingerprint < Fingerprint
     {
       :location        => location,
       :error_class     => notice.error_class.to_s,
+      :environment     => notice.server_environment[:"environment-name"],
+      :api_key         => @api_key
     }
   end
 
