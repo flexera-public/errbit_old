@@ -69,7 +69,7 @@ namespace :errbit do
         notice.err = notice.app.find_or_create_err!(error_class: notice.error_class,
                                                     environment: notice.problem.environment,
                                                     fingerprint: fingerprint)
-        notice.save
+        notice.with(safe: {w: 0}).save
       end
       puts
 
