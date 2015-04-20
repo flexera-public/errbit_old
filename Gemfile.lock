@@ -399,7 +399,7 @@ DEPENDENCIES
   draper
   email_spec
   errbit_github_plugin!
-  errbit_plugin
+  errbit_plugin!
   errbit_trac_plugin
   execjs
   fabrication
