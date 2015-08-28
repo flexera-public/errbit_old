@@ -52,7 +52,7 @@ class NotificationServices::SlackService < NotificationService
               },
               {
                  :title => "Times Occurred",
-                 :value => problem.notices_count,
+                 :value => problem.notices_count.to_s,
                  :short => false
               }
            ]
