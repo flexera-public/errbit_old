@@ -1,11 +1,9 @@
-require 'spec_helper'
-
-describe 'users/edit.html.haml' do
-  let(:user) { stub_model(User, :name => 'shingara') }
-  before {
-    view.stub(:current_user).and_return(user)
-    view.stub(:user).and_return(user)
-  }
+describe 'users/edit.html.haml', type: 'view' do
+  let(:user) { stub_model(User, name: 'shingara') }
+  before do
+    allow(view).to receive(:current_user).and_return(user)
+    allow(view).to receive(:user).and_return(user)
+  end
   it 'should have per_page option' do
     render
     expect(rendered).to match(/id="user_per_page"/)

@@ -1,12 +1,17 @@
-require 'spec_helper'
-
 describe ProblemsHelper do
   describe '#truncated_problem_message' do
     it 'is html safe' do
-      problem = double('problem', :message => '#<NoMethodError: ...>')
+      problem = double('problem', message: '#<NoMethodError: ...>')
       truncated = helper.truncated_problem_message(problem)
       expect(truncated).to be_html_safe
       expect(truncated).to_not include('<', '>')
+    end
+
+    it 'does not double escape html' do
+      problem = double('problem', message: '#<NoMethodError: ...>')
+      truncated = helper.truncated_problem_message(problem)
+      expect(truncated).to be_html_safe
+      expect(truncated).to_not include('&amp;')
     end
   end
 
@@ -17,18 +22,18 @@ describe ProblemsHelper do
 
     context "default config" do
       before do
-        Errbit::Config.stub(:use_gravatar).and_return(true)
-        Errbit::Config.stub(:gravatar_default).and_return('identicon')
+        allow(Errbit::Config).to receive(:use_gravatar).and_return(true)
+        allow(Errbit::Config).to receive(:gravatar_default).and_return('identicon')
       end
 
       it "should render image_tag with correct alt and src" do
         expected = "<img alt=\"#{email}\" class=\"gravatar\" src=\"#{base_url}?d=identicon&amp;s=48\" />"
-        expect(helper.gravatar_tag(email, :s => 48)).to eq(expected)
+        expect(helper.gravatar_tag(email, s: 48)).to eq(expected)
       end
 
       it "should override :d" do
         expected = "<img alt=\"#{email}\" class=\"gravatar\" src=\"#{base_url}?d=retro&amp;s=48\" />"
-        expect(helper.gravatar_tag(email, :d => 'retro', :s => 48)).to eq(expected)
+        expect(helper.gravatar_tag(email, d: 'retro', s: 48)).to eq(expected)
       end
     end
 
@@ -62,7 +67,7 @@ describe ProblemsHelper do
       let(:email_hash) { Digest::MD5.hexdigest email }
 
       it "should return the http url" do
-        ActionController::TestRequest.any_instance.stub :ssl? => true
+        allow(controller.request).to receive(:ssl?).and_return(true)
         expect(helper.gravatar_url(email)).to eq("https://secure.gravatar.com/avatar/#{email_hash}?d=identicon")
       end
     end

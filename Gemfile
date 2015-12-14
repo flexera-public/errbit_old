@@ -1,39 +1,42 @@
 source 'https://rubygems.org'
 
-RAILS_VERSION = '~> 3.2.18'
+RAILS_VERSION = '~> 4.2.0'
+
+send :ruby, ENV['GEMFILE_RUBY_VERSION'] if ENV['GEMFILE_RUBY_VERSION']
+
+detected_ruby_version = Gem::Version.new(RUBY_VERSION.dup)
+required_ruby_version = Gem::Version.new('2.1.0') # minimum supported version
+
+if detected_ruby_version < required_ruby_version
+  fail "RUBY_VERSION must be at least #{required_ruby_version}, " \
+       "detected RUBY_VERSION #{RUBY_VERSION}"
+end
 
 gem 'actionmailer', RAILS_VERSION
 gem 'actionpack', RAILS_VERSION
 gem 'railties', RAILS_VERSION
 
-gem 'mongoid'
-
-gem 'mongoid_rails_migrations'
+gem 'actionmailer_inline_css'
+gem 'decent_exposure'
 gem 'devise'
+gem 'dotenv-rails'
+gem 'draper'
+gem 'errbit_plugin'
+gem 'errbit_github_plugin'
+gem 'font-awesome-rails'
 gem 'haml'
 gem 'htmlentities'
-gem 'rack-ssl', :require => 'rack/ssl'   # force SSL
-
-gem 'useragent'
-gem 'decent_exposure'
-gem 'strong_parameters'
-gem 'actionmailer_inline_css'
 gem 'kaminari', '>= 0.14.1'
-gem 'rack-ssl-enforcer', :require => false
-gem 'fabrication'
+gem 'mongoid', '5.0.0'
+gem 'mongoid_rails_migrations'
+gem 'rack-ssl', require: 'rack/ssl' # force SSL
+gem 'rack-ssl-enforcer', require: false
 gem 'rails_autolink'
+gem 'useragent'
+
 # Please don't update hoptoad_notifier to airbrake.
 # It's for internal use only, and we monkeypatch certain methods
 gem 'hoptoad_notifier', "~> 2.4"
-gem 'draper', :require => false
-
-gem 'errbit_plugin',
-  :git => 'https://github.com/errbit/errbit_plugin.git'
-  # :path => 'vendor/gems/errbit_plugin'
-gem 'errbit_github_plugin',
-  :git => 'https://github.com/errbit/errbit_github_plugin.git'
-  # :path => 'vendor/gems/errbit_github_plugin'
-gem 'errbit_trac_plugin'
 
 # Notification services
 # ---------------------------------------
@@ -41,7 +44,7 @@ gem 'campy'
 # Hipchat
 gem 'hipchat'
 # Google Talk
-gem 'xmpp4r', :require => ["xmpp4r", "xmpp4r/muc"]
+gem 'xmpp4r', require: ["xmpp4r", "xmpp4r/muc"]
 # Hoiio (SMS)
 gem 'hoi'
 # Pushover (iOS Push notifications)
@@ -57,58 +60,57 @@ gem 'flowdock'
 gem 'omniauth-github'
 
 gem 'ri_cal'
-gem 'yajl-ruby', :require => "yajl"
+gem 'yajl-ruby', platform: 'ruby'
+gem 'json', platform: 'jruby'
 
 group :development, :test do
-  gem 'rspec-rails'
-  gem 'webmock', :require => false
-  gem 'airbrake', :require => false
-  gem 'debugger', :platform => :mri_19
+  gem 'airbrake', require: false
   gem 'pry-rails'
-#  gem 'rpm_contrib'
-#  gem 'newrelic_rpm'
+  gem 'pry-byebug', platforms: [:mri]
   gem 'quiet_assets'
+  gem 'rubocop', require: false
 end
 
 group :development do
-  gem 'capistrano', '~> 2.0', :require => false
+  gem 'capistrano',         require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-rails',   require: false
+  gem 'capistrano-rbenv',   require: false
 
   # better errors
   gem 'better_errors'
-  gem 'binding_of_caller'
+  gem 'binding_of_caller', platform: 'ruby'
   gem 'meta_request'
-  gem 'foreman', :require => false
-
-  # Use puma for development
-  gem 'puma', :require => false
-
 end
 
 group :test do
-  gem 'capybara', :require => false
-  gem 'poltergeist', :require => false
-  gem 'launchy', :require => false
-  gem 'database_cleaner', :require => false
+  gem 'rspec', '~> 3.3'
+  gem 'rspec-rails', '~> 3.0', require: false
+  gem 'rspec-activemodel-mocks'
+  gem 'rspec-its'
+  gem 'mongoid-rspec', '~> 3.0.0', require: false
+  gem 'fabrication'
+  gem 'capybara'
+  gem 'poltergeist'
+  gem 'launchy'
   gem 'email_spec'
   gem 'timecop'
-  gem 'coveralls', :require => false
-  gem 'mongoid-rspec', :require => false
+  gem 'coveralls', require: false
 end
 
 group :heroku, :production do
-  gem 'unicorn', :require => false
+  gem 'rails_12factor', require: ENV.key?("HEROKU")
+  gem 'unicorn', require: false, platform: 'ruby'
 end
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'execjs'
-  gem 'therubyracer', :platform => :ruby  # C Ruby (MRI) or Rubinius, but NOT Windows
-  gem 'uglifier',     '>= 1.0.3'
-  # We can't upgrade because not compatible to jquery >= 1.9.
-  # To do that, we need fix the rails.js
-  gem 'jquery-rails', '~> 2.1.4'
-  gem 'pjax_rails'
-  gem 'underscore-rails'
-  gem 'turbo-sprockets-rails3'
-end
+gem 'therubyracer', platform: :ruby # C Ruby (MRI) or Rubinius, but NOT Windows
+gem 'sass-rails'
+gem 'uglifier'
+# We can't upgrade because not compatible to jquery >= 1.9.
+# To do that, we need fix the rails.js
+gem 'jquery-rails', '~> 2.1.4'
+gem 'pjax_rails'
+gem 'underscore-rails'
+
+ENV['USER_GEMFILE'] ||= './UserGemfile'
+eval_gemfile ENV['USER_GEMFILE'] if File.exist?(ENV['USER_GEMFILE'])

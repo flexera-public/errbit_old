@@ -1,50 +1,41 @@
-require 'spec_helper'
-
 describe IssueTrackerDecorator do
+  let(:fake_tracker) do
+    klass = Class.new(ErrbitPlugin::IssueTracker) do
+      def self.label
+        'fake'
+      end
 
-    let(:none_tracker) do
-      ErrbitPlugin::NoneIssueTracker.new(Object.new, 'none')
-    end
+      def self.note
+        'a note'
+      end
 
-    let(:tracker) do
-      ErrbitPlugin::FakeIssueTracker.new(Object.new, 'fake')
-    end
+      def self.fields
+        {
+          foo: { label: 'foo' },
+          bar: { label: 'bar' }
+        }
+      end
 
-    let(:decorator) do
-      IssueTrackerDecorator.new(tracker, 'fake')
-    end
-
-  describe "#note" do
-
-    it 'return the html_safe of Note' do
-      expect(decorator.note).to eql tracker.note
-    end
-  end
-
-  describe "#issue_trackers" do
-    it 'return an array of IssueTrackerDecorator' do
-      decorator.issue_trackers do |it|
-        expect(it).to be_a(IssueTrackerDecorator)
+      def configured?
+        true
       end
     end
+    klass.new 'nothing special'
   end
 
-  describe "#fields" do
-    it 'return all Fields define decorate' do
-      decorator.fields do |itf|
-        expect(itf).to be_a(IssueTrackerFieldDecorator)
-        expect([:foo, :bar]).to be_include(itf.object)
-        expect([{:label => 'foo'}, {:label => 'bar'}]).to be_include(itf.field_info)
-      end
-    end
+  let(:issue_tracker) do
+    it = IssueTracker.new
+    allow(it).to receive(:tracker).and_return(fake_tracker)
+    it
   end
 
-  describe "#params_class" do
-    it 'add the label in class' do
-      expect(decorator.params_class(IssueTracker.new(:type_tracker => 'none'))).to eql 'fake'
-    end
-    it 'add chosen class if _type is same' do
-      expect(decorator.params_class(IssueTracker.new(:type_tracker => 'fake'))).to eql 'chosen fake'
+  let(:decorator) do
+    IssueTrackerDecorator.new(issue_tracker)
+  end
+
+  describe "#type" do
+    it 'returns decorator for the issue tracker class' do
+      expect(decorator.type.class).to eq(IssueTrackerTypeDecorator)
     end
   end
 end

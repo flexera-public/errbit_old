@@ -1,15 +1,15 @@
-require 'spec_helper'
-
-describe "problems/index.html.haml" do
+describe "problems/index.html.haml", type: 'view' do
   let(:problem_1) { Fabricate(:problem) }
-  let(:problem_2) { Fabricate(:problem, :app => problem_1.app) }
+  let(:problem_2) { Fabricate(:problem, app: problem_1.app) }
 
   before do
-    # view.stub(:app).and_return(problem.app)
-    view.stub(:selected_problems).and_return([])
-    view.stub(:problems).and_return(Kaminari.paginate_array([problem_1, problem_2]).page(1).per(10))
-    view.stub(:params_sort).and_return('asc')
-    controller.stub(:current_user) { Fabricate(:user) }
+    allow(view).to receive(:selected_problems).and_return([])
+    allow(view).to receive(:all_errs).and_return(false)
+    allow(view).to receive(:problems).and_return(
+      Kaminari.paginate_array([problem_1, problem_2]).page(1).per(10)
+    )
+    allow(view).to receive(:params_sort).and_return('asc')
+    allow(controller).to receive(:current_user).and_return(Fabricate(:user))
   end
 
   describe "with problem" do
@@ -21,5 +21,19 @@ describe "problems/index.html.haml" do
     end
   end
 
-end
+  describe "show/hide resolved button behavior" do
+    it "displays unresolved errors title and button" do
+      allow(view).to receive(:all_errs).and_return(false)
+      render
+      expect(view.content_for(:title)).to match 'Unresolved Errors'
+      expect(view.content_for(:action_bar)).to have_link 'show resolved'
+    end
 
+    it "displays all errors title and button" do
+      allow(view).to receive(:all_errs).and_return(true)
+      render
+      expect(view.content_for :title).to match 'All Errors'
+      expect(view.content_for :action_bar).to have_link 'hide resolved'
+    end
+  end
+end
